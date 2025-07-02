@@ -1,22 +1,296 @@
-html {
-  font-size: 14px;
-}
-
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
+:root {
+    --primary-blue: #1E3A8A;
+    --secondary-blue: #3B82F6;
+    --light-blue: #BFDBFE;
+    --dark-blue: #172554;
+    --accent-green: #10B981;
+    --danger-red: #EF4444;
+    --hover-blue: #2563EB;
+    --modern-purple: #6B46C1;
+    --gradient-bg: linear-gradient(135deg, #6B46C1 0%, #9333EA 100%);
 }
 
 body {
-  margin-bottom: 60px;
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    margin: 0;
+    background-color: #F9FAFB;
+    display: flex;
+    flex-direction: column;
+}
+
+.navbar {
+    background: var(--gradient-bg);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 0.75rem 1.5rem;
+}
+
+.navbar-brand {
+    color: white !important;
+    font-weight: 700;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: transform 0.2s ease;
+}
+
+    .navbar-brand:hover {
+        transform: scale(1.05);
+    }
+
+.navbar-toggler {
+    border: none;
+    color: white;
+}
+
+.navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.8%29' stroke-width='2' stroke-linecap='round' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
+
+.sidebar {
+    width: 250px;
+    background: white;
+    border-right: 1px solid #E5E7EB;
+    padding: 1.5rem 1rem;
+    transition: transform 0.3s ease, width 0.3s ease;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+    position: fixed;
+    height: 100vh;
+    z-index: 1000;
+}
+
+    .sidebar.collapsed {
+        width: 80px;
+        transform: translateX(-170px);
+    }
+
+    .sidebar .nav-link {
+        color: #1F2937 !important;
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-weight: 500;
+        transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+        .sidebar .nav-link:hover {
+            background-color: var(--light-blue);
+            color: var(--secondary-blue) !important;
+        }
+
+        .sidebar .nav-link i {
+            width: 20px;
+            text-align: center;
+        }
+
+        .sidebar .nav-link.collapsed-text {
+            display: none;
+        }
+
+    .sidebar.collapsed .nav-link .collapsed-text {
+        display: none;
+    }
+
+    .sidebar .btn-danger {
+        background-color: var(--danger-red);
+        border: none;
+        border-radius: 8px;
+        width: 100%;
+        padding: 0.75rem;
+        font-weight: 500;
+        transition: background-color 0.2s ease;
+    }
+
+        .sidebar .btn-danger:hover {
+            background-color: #DC2626;
+        }
+
+main {
+    margin-left: 250px;
+    padding: 2rem;
+    flex-grow: 1;
+    transition: margin-left 0.3s ease;
+}
+
+    main.collapsed {
+        margin-left: 80px;
+    }
+
+.card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    width: 100%;
+}
+
+.header {
+    background: var(--modern-purple);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px 8px 0 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: -1.5rem -1.5rem 1.5rem -1.5rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+    .header h2 {
+        margin: 0;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-size: 1.75rem;
+    }
+
+    .header .icon {
+        font-size: 1.75rem;
+    }
+
+.btn-create {
+    background-color: var(--accent-green);
+    border: none;
+    border-radius: 8px;
+    padding: 0.5rem 1.25rem;
+    color: white;
+    font-weight: 500;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    margin-bottom: 1rem;
+}
+
+    .btn-create:hover {
+        background-color: #059669;
+        transform: translateY(-2px);
+    }
+
+.table {
+    min-width: 800px;
+    margin-bottom: 0;
+}
+
+    .table thead {
+        background-color: var(--primary-blue);
+        color: white;
+    }
+
+    .table th, .table td {
+        vertical-align: middle;
+        padding: clamp(8px, 1.5vw, 12px);
+        text-align: center;
+        white-space: nowrap;
+    }
+
+.table-hover tbody tr:hover {
+    background-color: var(--light-blue);
+    transition: background-color 0.2s ease;
+}
+
+.btn-info {
+    background-color: var(--secondary-blue);
+    border: none;
+    border-radius: 6px;
+    padding: clamp(4px, 1vw, 8px) clamp(8px, 1.5vw, 12px);
+    color: white;
+    font-weight: 500;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+    .btn-info:hover {
+        background-color: var(--hover-blue);
+        transform: translateY(-1px);
+    }
+
+.btn-danger {
+    background-color: var(--danger-red);
+    border: none;
+    border-radius: 6px;
+    padding: clamp(4px, 1vw, 8px) clamp(8px, 1.5vw, 12px);
+    color: white;
+    font-weight: 500;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+    .btn-danger:hover {
+        background-color: #DC2626;
+        transform: translateY(-1px);
+    }
+
+.diagnosis-malaria {
+    color: var(--danger-red);
+    font-weight: bold;
+}
+
+.diagnosis-healthy {
+    color: var(--accent-green);
+    font-weight: bold;
+}
+
+.diagnosis-other {
+    color: #FBBF24;
+    font-weight: bold;
+}
+
+footer {
+    background-color: var(--dark-blue);
+    color: white;
+    padding: 1rem;
+    text-align: center;
+    margin-top: auto;
+}
+
+@media (max-width: 768px) {
+    .card {
+        padding: 1rem;
+    }
+
+    .table th, .table td {
+        font-size: clamp(0.75rem, 2.5vw, 1rem);
+    }
+
+    .btn {
+        font-size: clamp(0.7rem, 2vw, 0.875rem);
+    }
+
+    main {
+        margin-left: 80px;
+    }
+}
+
+@media (max-width: 480px) {
+    .header h2 {
+        font-size: 1.25rem;
+    }
+
+    .table th:nth-child(n+4),
+    .table td:nth-child(n+4) {
+        display: none;
+    }
+
+    .table td:first-child,
+    .table th:first-child {
+        width: 40%;
+    }
+
+    main {
+        margin-left: 0;
+        padding: 1rem;
+    }
+
+    .sidebar {
+        transform: translateX(-250px);
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+    }
+
+        .sidebar.active {
+            transform: translateX(0);
+        }
 }
