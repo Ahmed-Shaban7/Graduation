@@ -103,10 +103,10 @@ namespace DoctorPatientDashboard.Controllers
             return RedirectToAction("Create", new { patientId = patientId });
         }
 
-        public async Task<IActionResult> Analyze(int testId) 
+        public async Task<IActionResult> Analyze(int id) 
         {
             
-            var test = await _context.Tests.Include(t => t.Patient).FirstOrDefaultAsync(t => t.TestID == testId);
+            var test = await _context.Tests.Include(t => t.Patient).FirstOrDefaultAsync(t => t.TestID == id);
             if (test == null)
             {
                 return NotFound();
