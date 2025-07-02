@@ -1,0 +1,188 @@
+﻿@using DoctorPatientDashboard.Models.Enums
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewBag.Title - Manager Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="~/Image/blood-donation.png" type="image/png" />
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+    <style>
+        :root {
+            --primary-blue: #1E3A8A;
+            --secondary-blue: #3B82F6;
+            --light-blue: #BFDBFE;
+            --dark-blue: #172554;
+            --hover-blue: #2563EB;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            font-family: 'Inter', sans-serif;
+            background-color: #F9FAFB;
+        }
+
+        .navbar {
+            background-color: var(--primary-blue) !important;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-brand {
+            color: white !important;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sidebar {
+            min-height: 100vh;
+            background-color: white;
+            border-right: 1px solid #E5E7EB;
+            padding-top: 1rem;
+        }
+
+        .nav-link {
+            color: #1F2937 !important;
+            border-radius: 6px;
+            padding: 10px 15px;
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+
+        .nav-link:hover {
+            background-color: var(--light-blue);
+            color: var(--secondary-blue) !important;
+        }
+
+        .nav-link i {
+            width: 20px;
+            text-align: center;
+        }
+
+        .btn-danger {
+            background-color: #EF4444;
+            border: none;
+            border-radius: 6px;
+            width: 100%;
+            padding: 10px;
+            font-weight: 500;
+            transition: background-color 0.2s ease;
+        }
+
+        .btn-danger:hover {
+            background-color: #DC2626;
+        }
+
+        main {
+            padding: 2rem;
+        }
+
+        h1.h2 {
+            color: var(--dark-blue);
+            font-weight: 700;
+        }
+
+        .lead {
+            color: #4B5563;
+        }
+
+        footer {
+            margin-top: auto;
+            background-color: var(--dark-blue) !important;
+            color: white;
+            padding: 1.5rem;
+            font-size: 0.9rem;
+        }
+
+        media (max-width: 768px) {
+            .sidebar {
+                min-height: auto;
+                margin-bottom: 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <img src="~/Image/blood-donation.png" width="30" height="30" class="d-inline-block align-top" alt="Icon" />
+                Admin Panel
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav class="col-md-2 d-none d-md-block sidebar p-3">
+                <div class="position-sticky">
+                    <ul class="nav flex-column">
+                        <li class="nav-item mb-2">
+                            <a class="nav-link" asp-controller="Home" asp-action="Dashboard">
+                                <i class="fas fa-chart-line me-2"></i> Dashboard
+                            </a>
+                        </li>
+                        @if (User.IsInRole(AppRoles.Admin.ToString()))
+                        {
+                        <li class="nav-item mb-2">
+                            <a class="nav-link" asp-controller="Doctor" asp-action="Doctors">
+                                <i class="fas fa-user-md me-2"></i> Manage Doctors
+                            </a>
+                        </li>
+                        }
+                        
+                        <li class="nav-item mb-2">
+                            <a class="nav-link" asp-controller="Patients" asp-action="Index">
+                                <i class="fas fa-users me-2"></i> Patients
+                            </a>
+                        </li>
+                        <li class="nav-item mb-2">
+                            <form asp-action="Logout" asp-controller="Account" method="post">
+                                <button type="submit" class="btn btn-danger">Logout</button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Main Content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+                    <h1 class="h2">@ViewBag.PageTitle</h1>
+                </div>
+                <p class="lead">@ViewBag.PageDescription</p>
+
+                @RenderBody()
+            </main>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white text-center py-3">
+        <div>Manager Dashboard © @DateTime.Now.Year</div>
+    </footer>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,135 @@
+﻿@using DoctorPatientDashboard.Models
+@model IEnumerable<ApplicationUser>
+
+@{
+    ViewData["Title"] = "Users List";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #1E3A8A;
+            --secondary-blue: #3B82F6;
+            --light-blue: #BFDBFE;
+            --dark-blue: #172554;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #E0EAFF 0%, #F9FAFB 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            margin: 0;
+            padding-top: 20px;
+        }
+
+        .users-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 800px;
+        }
+
+        h2 {
+            color: var(--dark-blue);
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .table {
+            margin-bottom: 0;
+        }
+
+            .table thead {
+                background-color: var(--primary-blue);
+                color: white;
+            }
+
+            .table th, .table td {
+                vertical-align: middle;
+                padding: 12px;
+                text-align: center;
+            }
+
+        .table-hover tbody tr:hover {
+            background-color: var(--light-blue);
+        }
+
+        .btn-info {
+            background-color: var(--secondary-blue);
+            border: none;
+            border-radius: 6px;
+            padding: 6px 12px;
+            color: white;
+            font-weight: 500;
+            transition: background-color 0.2s ease;
+        }
+
+            .btn-info:hover {
+                background-color: #2563EB;
+            }
+
+        .btn-danger {
+            background-color: #EF4444;
+            border: none;
+            border-radius: 6px;
+            padding: 6px 12px;
+            color: white;
+            font-weight: 500;
+            transition: background-color 0.2s ease;
+        }
+
+            .btn-danger:hover {
+                background-color: #DC2626;
+            }
+    </style>
+</head>
+<body>
+    <div class="users-card">
+        <h2>👤 Users List</h2>
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>Email</th>
+                        <th>Full Name</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in Model)
+                    {
+                        <tr>
+                            <td>@user.Email</td>
+                            <td>@user.FullName</td>
+                            <td>
+                                <div class="d-flex gap-2 justify-content-center">
+                                    <a href="@Url.Action("Details", "UserManagement", new { id = user.Id })" class="btn btn-info btn-sm">Details</a>
+                                    <form asp-action="DeleteUser" asp-controller="UserManagement" method="post" style="display:inline;">
+                                        <input type="hidden" name="id" value="@user.Id" />
+                                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this user?');">Delete</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,72 @@
+﻿@using DoctorPatientDashboard.Models
+@using Microsoft.AspNetCore.Identity
+@using System.Security.Claims
+
+@model Patient
+
+@{
+    ViewData["Title"] = "Create Patient";
+}
+
+<h1>Create Patient</h1>
+<hr />
+
+<div class="row">
+    <div class="col-md-8">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="row">
+                <div class="col-md-6 form-group mb-3">
+                    <label asp-for="Name" class="control-label"></label>
+                    <input asp-for="Name" class="form-control" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 form-group mb-3">
+                    <label asp-for="Age" class="control-label"></label>
+                    <input asp-for="Age" class="form-control" />
+                    <span asp-validation-for="Age" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Address" class="control-label"></label>
+                <input asp-for="Address" class="form-control" />
+                <span asp-validation-for="Address" class="text-danger"></span>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 form-group mb-3">
+                    <label asp-for="Phone" class="control-label"></label>
+                    <input asp-for="Phone" class="form-control" />
+                    <span asp-validation-for="Phone" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 form-group mb-3">
+                    <label asp-for="Gender" class="control-label"></label>
+                    <input asp-for="Gender" class="form-control" placeholder="e.g., Male, Female" />
+                    <span asp-validation-for="Gender" class="text-danger"></span>
+                </div>
+            </div>
+
+            @* --- Role-Based Logic for Doctor Assignment --- *@
+
+            @if (User.IsInRole("Admin"))
+            {
+                @* If user is an Admin, show a dropdown to choose the doctor *@
+                <div class="form-group mb-3">
+                    <label asp-for="DocID" class="control-label">Assign Doctor</label>
+                    <select asp-for="DocID" class="form-control" asp-items="@(ViewData["DocID"] as SelectList)">
+                        <option value="">-- Choose a Doctor --</option>
+                    </select>
+                </div>
+            }
+
+            @* The Doctor role does not need any input field here. The ID will be assigned in the controller. *@
+
+            <div class="form-group mt-4">
+                <input type="submit" value="Create Patient" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+            </div>
+        </form>
+    </div>
+</div>
