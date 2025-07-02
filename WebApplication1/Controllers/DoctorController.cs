@@ -17,6 +17,7 @@ namespace DoctorPatientDashboard.Controllers
             db = context;
         }
 
+
         [Authorize(Roles =nameof(AppRoles.Admin))] // Good practice to also restrict controller action access
         public async Task<IActionResult> Doctors()
         {
