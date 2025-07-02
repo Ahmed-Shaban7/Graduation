@@ -1,0 +1,90 @@
+﻿@using DoctorPatientDashboard.Models
+@model IEnumerable<Test>
+
+@{
+    ViewData["Title"] = "Test Records for " + ViewData["PatientName"];
+    var patientId = ViewData["PatientId"];
+}
+
+<h1 class="mb-4">Test Records for: <span class="text-primary">@ViewData["PatientName"]</span></h1>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <table class="table table-hover align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th scope="col" style="width: 20%;">Image</th>
+                    <th scope="col" style="width: 15%;">Test</th>
+                    <th scope="col">Diagnosis</th>
+                    <th scope="col" style="width: 20%;" class="text-center">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var test in Model)
+                {
+                    <tr>
+                        <td>
+                            <img src="@test.TestImage" class="img-fluid rounded" style="max-height: 120px;" alt="Test Image" />
+                        </td>
+                        <td>
+                            @if (string.IsNullOrEmpty(test.Result))
+                            {
+                                <form asp-action="Analyze" asp-controller="Test" method="post">
+                                    <input type="hidden" name="id" value="@test.TestID" />
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-microscope me-1"></i> Analyze
+                                    </button>
+                                </form>
+                            }
+                            else
+                            {
+                                <span class="badge bg-success p-2">Analyzed</span>
+                            }
+                        </td>
+                        <td class="fw-bold">
+                            @if (test.Result == "Parasitized")
+                            {
+                                <span class="text-danger">Malaria</span>
+                            }
+                            else if (test.Result == "Uninfected")
+                            {
+                                <span class="text-success">Healthy</span>
+                            }
+                            else
+                            {
+                                <span class="text-warning">Pending Analysis...</span>
+                            }
+                        </td>
+                        <td class="text-center">
+                            <div class="d-flex justify-content-center gap-2">
+                                <a asp-action="Edit" asp-controller="Test" asp-route-id="@test.TestID" class="btn btn-sm btn-outline-secondary">
+                                    <i class="fas fa-pencil-alt"></i> Edit
+                                </a>
+
+                                <form asp-action="Delete" asp-controller="Test" method="post">
+                                    <input type="hidden" name="id" value="@test.TestID" />
+                                    <button type="submit" class="btn btn-sm btn-danger"
+                                            onclick="return confirm('Are you sure you want to permanently delete this test?');">
+                                        <i class="fas fa-trash"></i> Delete
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="card-footer bg-light d-flex justify-content-between">
+        <a asp-action="Details" asp-controller="Patients" asp-route-id="@patientId" class="btn btn-secondary">
+
+            <i class="fas fa-arrow-left me-1"></i> Back to Patient Details
+
+        </a>
+        <a asp-action="Create" asp-controller="Test" asp-route-patientId="@patientId" class="btn btn-success">
+
+            <i class="fas fa-upload me-1"></i> Upload New Test
+
+        </a>
+    </div>
+</div>

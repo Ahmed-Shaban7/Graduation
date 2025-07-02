@@ -1,0 +1,47 @@
+﻿@{
+    ViewData["Title"] = "Upload New Test";
+    var patientId = ViewData["PatientId"];
+    var patientName = ViewData["PatientName"];
+}
+
+<h1 class="mb-4">Upload New Test for: <span class="text-primary">@patientName</span></h1>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                @* ملاحظة هامة جداً: يجب إضافة enctype="multipart/form-data" 
+                  إلى الفورم حتى تعمل خاصية رفع الملفات بشكل صحيح.
+                *@
+                <form asp-action="Create" method="post" enctype="multipart/form-data">
+
+                    @* حقل مخفي لإرسال رقم المريض مع الفورم *@
+                    <input type="hidden" name="patientId" value="@patientId" />
+
+                    <div class="mb-3">
+                        <label for="testImageFile" class="form-label">Select Test Image</label>
+                        @* اسم حقل الإدخال "testImageFile" يجب أن يطابق اسم المتغير 
+                          في الـ Action وهو (IFormFile testImageFile)
+                        *@
+                        <input type="file" name="testImageFile" class="form-control" required accept="image/*" />
+                    </div>
+
+                    @if (TempData["ErrorMessage"] != null)
+                    {
+                        <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+                    }
+
+                    <hr />
+                    <div class="d-flex justify-content-between">
+                        <a asp-action="Index" asp-route-patientId="@patientId" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-1"></i> Back to Tests List
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-upload me-1"></i> Upload and Save
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

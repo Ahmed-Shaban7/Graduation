@@ -1,42 +1,185 @@
 ﻿@using DoctorPatientDashboard.Models
+@using Microsoft.AspNetCore.Html
 @model Patient
 
 @{
     ViewData["Title"] = "Patient Details";
 }
 
-<h1>Details</h1>
+<head>
+    <style>
+        body {
+            background-color: #f4f7f6;
+        }
 
-<div>
-    <h4>Patient</h4>
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.Name)</dt>
-        <dd class="col-sm-10">@Html.DisplayFor(model => model.Name)</dd>
+        .patient-details-card {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+            margin-top: 2rem;
+            overflow: hidden;
+        }
 
-        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.Age)</dt>
-        <dd class="col-sm-10">@Html.DisplayFor(model => model.Age)</dd>
+        .card-header-custom {
+            background-color: #1E3A8A;
+            color: white;
+            padding: 1.5rem;
+            font-size: 1.75rem;
+            font-weight: 600;
+        }
 
-        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.Address)</dt>
-        <dd class="col-sm-10">@Html.DisplayFor(model => model.Address)</dd>
+        .card-body-custom {
+            padding: 2rem;
+        }
 
-        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.Phone)</dt>
-        <dd class="col-sm-10">@Html.DisplayFor(model => model.Phone)</dd>
+        .details-row {
+            padding: 1rem 0;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            align-items: center;
+        }
 
-        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.Gender)</dt>
-        <dd class="col-sm-10">@Html.DisplayFor(model => model.Gender)</dd>
+            .details-row:last-child {
+                border-bottom: none;
+            }
 
-        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.Diagnosis)</dt>
-        <dd class="col-sm-10">@Html.DisplayFor(model => model.Diagnosis)</dd>
+        .details-label {
+            font-weight: 600;
+            color: #343a40;
+            font-size: 1rem;
+        }
 
-        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.Date)</dt>
-        <dd class="col-sm-10">@Html.DisplayFor(model => model.Date)</dd>
+        .details-value {
+            color: #495057;
+            font-size: 1rem;
+        }
 
-        <dt class="col-sm-2">Doctor</dt>
-        <dd class="col-sm-10">@Html.DisplayFor(model => model.Doctor.UserName)</dd>
-    </dl>
+        .card-footer-custom {
+            background-color: #f8f9fa;
+            padding: 1.5rem;
+            text-align: right;
+        }
+
+        .btn-custom-secondary {
+            background-color: #6c757d;
+            border-color: #6c757d;
+            color: white;
+        }
+
+        .btn-custom-primary {
+            background-color: #3B82F6;
+            border-color: #3B82F6;
+            color: white;
+        }
+
+        .text-danger {
+            color: #dc3545 !important;
+        }
+
+        .text-success {
+            color: #198754 !important;
+        }
+
+        .text-warning {
+            color: #ffc107 !important;
+        }
+    </style>
+</head>
+
+<div class="container">
+    <div class="patient-details-card">
+        <div class="card-header-custom">
+            <i class="fas fa-user-injured me-2"></i> Patient: @Model.Name
+        </div>
+        <div class="card-body-custom">
+            <dl class="row">
+                <div class="col-12 details-row">
+                    <dt class="col-md-3 details-label">Name</dt>
+                    <dd class="col-md-9 details-value mb-0">@Model.Name</dd>
+                </div>
+
+                <div class="col-12 details-row">
+                    <dt class="col-md-3 details-label">Age</dt>
+                    <dd class="col-md-9 details-value mb-0">@Model.Age</dd>
+                </div>
+
+                <div class="col-12 details-row">
+                    <dt class="col-md-3 details-label">Address</dt>
+                    <dd class="col-md-9 details-value mb-0">@Model.Address</dd>
+                </div>
+
+                <div class="col-12 details-row">
+                    <dt class="col-md-3 details-label">Phone</dt>
+                    <dd class="col-md-9 details-value mb-0">@Model.Phone</dd>
+                </div>
+
+                <div class="col-12 details-row">
+                    <dt class="col-md-3 details-label">Gender</dt>
+                    <dd class="col-md-9 details-value mb-0">@Model.Gender</dd>
+                </div>
+
+                <div class="col-12 details-row">
+                    <dt class="col-md-3 details-label">Diagnosis</dt>
+                    <dd class="col-md-9 details-value mb-0 fw-bold">
+                        @RenderDiagnosis(Model.Diagnosis)
+                    </dd>
+                </div>
+
+                <div class="col-12 details-row">
+                    <dt class="col-md-3 details-label">Creation Date</dt>
+                    <dd class="col-md-9 details-value mb-0">@Model.Date.ToString("D")</dd>
+                </div>
+
+                <div class="col-12 details-row">
+                    <dt class="col-md-3 details-label">Assigned Doctor</dt>
+                    <dd class="col-md-9 details-value mb-0">@Model.Doctor?.UserName</dd>
+                </div>
+            </dl>
+        </div>
+        <div class="card-footer-custom d-flex justify-content-end gap-2">
+            @if (User.IsInRole("Doctor"))
+
+            {
+
+                <a asp-controller="Test" asp-action="Tests" asp-route-patientId="@Model.PatientID" class="btn btn-custom-primary">
+
+                    <i class="fas fa-vials me-1"></i> Tests
+
+                </a>
+
+            }
+
+            <a asp-action="Index" class="btn btn-custom-secondary">
+
+                <i class="fas fa-arrow-left me-1"></i> Back to List
+
+            </a>
+        </div>
+    </div>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model.PatientID" class="btn btn-primary">Edit</a>
-    <a asp-action="Index">Back to List</a>
-</div>
+
+@functions {
+    public Microsoft.AspNetCore.Html.IHtmlContent RenderDiagnosis(string diagnosis)
+    {
+        string displayText;
+        string cssClass;
+
+        switch (diagnosis)
+        {
+            case "Parasitized":
+                displayText = "Malaria";
+                cssClass = "text-danger";
+                break;
+            case "Uninfected":
+                displayText = "Healthy";
+                cssClass = "text-success";
+                break;
+            default:
+                displayText = "Pending Analysis...";
+                cssClass = "text-warning";
+                break;
+        }
+
+        return new HtmlString($"<span class='{cssClass}'>{displayText}</span>");
+    }
+}

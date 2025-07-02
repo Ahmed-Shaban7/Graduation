@@ -1,0 +1,53 @@
+﻿@using DoctorPatientDashboard.Models
+@model Test
+
+@{
+    ViewData["Title"] = "Replace Test Image";
+}
+
+<h1>Replace Image for Patient: <span class="text-primary">@Model.Patient.Name</span></h1>
+<p class="text-muted">Upload a new image to replace the current one. The old diagnosis will be cleared.</p>
+<hr />
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <form asp-action="Edit" method="post" enctype="multipart/form-data">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    @* حقول مخفية للحفاظ على البيانات الهامة *@
+                    <input type="hidden" asp-for="TestID" />
+                    <input type="hidden" asp-for="PatientId" />
+
+                    <div class="mb-3 text-center">
+                        <h5>Current Image</h5>
+                        <img src="@Model.TestImage" class="img-fluid rounded mb-2 border p-1" style="max-width: 350px;" alt="Current Test Image" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="newTestImage" class="form-label fw-bold">Upload New Image</label>
+                        @* تم جعل حقل رفع الصورة مطلوباً *@
+                        <input type="file" name="newTestImage" class="form-control" accept="image/*" required />
+                    </div>
+
+                    @if (TempData["ErrorMessage"] != null)
+                    {
+                        <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+                    }
+
+                    <hr />
+                    <div class="d-flex justify-content-between">
+                        @* تم تعديل الرابط ليعود لصفحة التحاليل بشكل صحيح *@
+                        <a asp-action="Tests" asp-controller="Test" asp-route-patientId="@Model.PatientId" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-1"></i> Back to Tests List
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-sync-alt me-1"></i> Replace Image
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

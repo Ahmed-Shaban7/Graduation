@@ -8,7 +8,7 @@ namespace DoctorPatientDashboard.Models
         [Key]
         public int TestID { get; set; }
 
-        public string Result { get; set; }
+        public string? Result { get; set; }
 
         public DateTime Date { get; set; }
 
