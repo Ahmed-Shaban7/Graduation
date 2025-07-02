@@ -1,6 +1,8 @@
 using DoctorPatientDashboard.Models;
 using DoctorPatientDashboard.Models.Enums;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 using WebApplication1.Models;
 
@@ -8,43 +10,59 @@ namespace WebApplication1.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
-        private readonly EntitiesContext db;
-        public HomeController(ILogger<HomeController> logger, EntitiesContext context)
+        private readonly EntitiesContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
+
+        public HomeController(EntitiesContext context, UserManager<ApplicationUser> userManager)
         {
-            _logger = logger;
-            db = context;
+            _context = context;
+            _userManager = userManager;
         }
 
-        public IActionResult Index()
+
+        public async Task<IActionResult> Dashboard()
         {
-            return View();
-        }
-        public IActionResult DashBoard()
-        {
-            if (User.IsInRole(AppRoles.Admin.ToString()))
+            var viewModel = new DashboardViewModel();
+
+            // ??? ????????? ?????? ???? ??????? ??????
+            IQueryable<Patient> patientsQuery = _context.Patients;
+            IQueryable<Test> testsQuery = _context.Tests;
+
+            // --- ????? ???????? ??? ??? ???????? ---
+            if (User.IsInRole("Doctor"))
             {
-                return View();
+                var currentDoctorId = _userManager.GetUserId(User);
+                patientsQuery = patientsQuery.Where(p => p.DocID == currentDoctorId);
+                // ????? ???????? ????? ??? ?????? ??????? ??????
+                testsQuery = testsQuery.Where(t => t.Patient.DocID == currentDoctorId);
             }
-            else if (User.IsInRole(AppRoles.Doctor.ToString()))
+            // ??? ??? ???????? Admin? ??? ??? ????? ?? ?????? ????? ?? ????????
+
+            // --- ???? ?????? ???????? ---
+            viewModel.TotalPatients = await patientsQuery.CountAsync();
+            viewModel.TotalTests = await testsQuery.CountAsync();
+            viewModel.PositiveCases = await testsQuery.CountAsync(t => t.Result == "Parasitized");
+            viewModel.NegativeCases = await testsQuery.CountAsync(t => t.Result == "Uninfected");
+
+            // --- ????? ?????? ????? ??????? ??????? ---
+            viewModel.PieChartLabels.AddRange(new string[] { "Malaria (Positive)", "Healthy (Negative)" });
+            viewModel.PieChartData.AddRange(new int[] { viewModel.PositiveCases, viewModel.NegativeCases });
+
+            // --- ????? ?????? ????? ??????? ????? (??? 7 ????) ---
+            var testsPerDay = await testsQuery
+                .Where(t => t.Date >= DateTime.UtcNow.AddDays(-7)) // ??? ?????? ??? 7 ???? ???
+                .GroupBy(t => t.Date.Date) // ????? ??? ?????
+                .Select(g => new { Day = g.Key, Count = g.Count() })
+                .OrderBy(x => x.Day)
+                .ToListAsync();
+
+            // ????? ?????? ????? ??????? ?????
+            foreach (var item in testsPerDay)
             {
-               
-                //todo : Statistics endpoint data
-
-                return View();
+                viewModel.LineChartLabels.Add(item.Day.ToString("MMM d")); // "Jul 3"
+                viewModel.LineChartData.Add(item.Count);
             }
-            return RedirectToAction("Login", "Account");
-        }
-       
-        public IActionResult Privacy()
-        {
-            return View();
-        }
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            return View(viewModel);
         }
-    }
-}
+    }}
