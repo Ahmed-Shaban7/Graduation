@@ -21,20 +21,20 @@ namespace DoctorPatientDashboard.Controllers
         }
         public async Task<IActionResult> Tests(int patientId)
         {
-            
+
             var patient = await _context.Patients.FindAsync(patientId);
             if (patient == null)
             {
                 return NotFound();
             }
 
-            
+
             var tests = await _context.Tests
                 .Where(t => t.PatientId == patientId)
-                .OrderByDescending(t => t.Date) 
+                .OrderByDescending(t => t.Date)
                 .ToListAsync();
 
-           
+
             ViewData["PatientName"] = patient.Name;
             ViewData["PatientId"] = patient.PatientID;
 
@@ -49,48 +49,48 @@ namespace DoctorPatientDashboard.Controllers
                 return NotFound();
             }
 
-            
+
             ViewData["PatientName"] = patient.Name;
             ViewData["PatientId"] = patient.PatientID;
 
             return View();
         }
 
-        
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(int patientId, IFormFile testImageFile)
         {
-            
+
             if (testImageFile != null && testImageFile.Length > 0)
             {
                 var uploadsFolder = Path.Combine(_hostEnvironment.WebRootPath, "Image");
 
-                
+
                 if (!Directory.Exists(uploadsFolder))
                 {
                     Directory.CreateDirectory(uploadsFolder);
                 }
 
-                
+
                 var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(testImageFile.FileName);
                 var filePath = Path.Combine(uploadsFolder, uniqueFileName);
 
-                
+
                 using (var fileStream = new FileStream(filePath, FileMode.Create))
                 {
                     await testImageFile.CopyToAsync(fileStream);
                 }
 
-                
+
                 var newTest = new Test
                 {
                     PatientId = patientId,
-                    TestImage = "/Image/" + uniqueFileName, 
+                    TestImage = "/Image/" + uniqueFileName,
                     Date = DateTime.UtcNow
                 };
 
-                
+
                 _context.Tests.Add(newTest);
                 await _context.SaveChangesAsync();
 
@@ -98,21 +98,21 @@ namespace DoctorPatientDashboard.Controllers
                 return RedirectToAction("Tests", new { patientId = patientId });
             }
 
-            
+
             TempData["ErrorMessage"] = "Please select a file to upload.";
             return RedirectToAction("Create", new { patientId = patientId });
         }
 
-        public async Task<IActionResult> Analyze(int id) 
+        public async Task<IActionResult> Analyze(int id)
         {
-            
+
             var test = await _context.Tests.Include(t => t.Patient).FirstOrDefaultAsync(t => t.TestID == id);
             if (test == null)
             {
                 return NotFound();
             }
 
-            
+
             byte[] imageBytes = System.IO.File.ReadAllBytes(Path.Combine(_hostEnvironment.WebRootPath, test.TestImage.TrimStart('/')));
 
             using (var client = new HttpClient())
@@ -125,41 +125,41 @@ namespace DoctorPatientDashboard.Controllers
                     var response = await client.PostAsync("http://localhost:5000/predict", content);
                     if (!response.IsSuccessStatusCode)
                     {
-                        
+
                         TempData["ErrorMessage"] = "Error connecting to the AI analysis service.";
                         return RedirectToAction("Index", new { patientId = test.PatientId });
                     }
 
                     var result = await response.Content.ReadAsStringAsync();
 
-                    
+
                     var diagnosis = JsonSerializer.Deserialize<Dictionary<string, string>>(result)["diagnosis"];
 
-                    
+
                     test.Result = diagnosis;
 
-                    
+
                     test.Patient.Diagnosis = diagnosis;
 
-                    
+
                     await _context.SaveChangesAsync();
                 }
                 catch (Exception ex)
                 {
-                    
+
                     TempData["ErrorMessage"] = "An error occurred during analysis: " + ex.Message;
                 }
             }
 
-            
+
             return RedirectToAction("Tests", new { patientId = test.PatientId });
         }
 
-        public async Task<IActionResult> Edit(int id) 
+        public async Task<IActionResult> Edit(int id)
         {
             var test = await _context.Tests
                                      .Include(t => t.Patient)
-                                     .FirstOrDefaultAsync(t => t.TestID == id); 
+                                     .FirstOrDefaultAsync(t => t.TestID == id);
 
             if (test == null)
             {
@@ -179,11 +179,11 @@ namespace DoctorPatientDashboard.Controllers
                 return NotFound();
             }
 
-            
+
             if (newTestImage == null || newTestImage.Length == 0)
             {
                 TempData["ErrorMessage"] = "Please select a new image to upload.";
-                
+
                 var patient = await _context.Patients.FindAsync(testModel.PatientId);
                 testModel.Patient = patient;
                 return View(testModel);
@@ -195,7 +195,7 @@ namespace DoctorPatientDashboard.Controllers
                 return NotFound();
             }
 
-            
+
             var uploadsFolder = Path.Combine(_hostEnvironment.WebRootPath, "Image");
             var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(newTestImage.FileName);
             var newFilePath = Path.Combine(uploadsFolder, uniqueFileName);
@@ -205,16 +205,16 @@ namespace DoctorPatientDashboard.Controllers
                 await newTestImage.CopyToAsync(fileStream);
             }
 
-            
+
             var oldImagePath = Path.Combine(_hostEnvironment.WebRootPath, originalTest.TestImage.TrimStart('/'));
             if (System.IO.File.Exists(oldImagePath))
             {
                 System.IO.File.Delete(oldImagePath);
             }
 
-            
-            originalTest.TestImage = "/Image/" + uniqueFileName; 
-            originalTest.Result = null; 
+
+            originalTest.TestImage = "/Image/" + uniqueFileName;
+            originalTest.Result = null;
 
             try
             {
@@ -223,17 +223,17 @@ namespace DoctorPatientDashboard.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                
+
             }
 
             await UpdatePatientDiagnosis(originalTest.PatientId);
             return RedirectToAction(nameof(Tests), new { patientId = originalTest.PatientId });
         }
 
-        [HttpPost] 
+        [HttpPost]
         [ValidateAntiForgeryToken]
         [HttpPost]
-        
+
         public async Task<IActionResult> Delete(int id)
         {
             var test = await _context.Tests.FindAsync(id);
@@ -242,7 +242,7 @@ namespace DoctorPatientDashboard.Controllers
                 return NotFound();
             }
 
-      
+
             var patientId = test.PatientId;
 
 
@@ -252,45 +252,45 @@ namespace DoctorPatientDashboard.Controllers
                 System.IO.File.Delete(imagePath);
             }
 
-            
+
             _context.Tests.Remove(test);
             await _context.SaveChangesAsync();
 
-            
+
             await UpdatePatientDiagnosis(patientId);
 
-            
+
             return RedirectToAction(nameof(Tests), new { patientId = patientId });
         }
 
         private async Task UpdatePatientDiagnosis(int patientId)
         {
-            
+
             var patient = await _context.Patients.FindAsync(patientId);
             if (patient == null) return;
 
-            
+
             var tests = await _context.Tests
                                       .Where(t => t.PatientId == patientId)
                                       .OrderByDescending(t => t.Date)
                                       .ToListAsync();
 
-            string newDiagnosis = "Pending Analysis..."; 
+            string newDiagnosis = "Pending Analysis...";
 
-            if (tests.Any()) 
+            if (tests.Any())
             {
-                
+
                 var latestTestWithResult = tests.FirstOrDefault(t => !string.IsNullOrEmpty(t.Result));
 
                 if (latestTestWithResult != null)
                 {
-                    
+
                     newDiagnosis = latestTestWithResult.Result;
                 }
-  
+
             }
 
-            
+
             patient.Diagnosis = newDiagnosis;
             await _context.SaveChangesAsync();
         }

@@ -35,11 +35,23 @@
                     <tr>
                         <td>@patient.Name</td>
                         <td>@(patient.Address ?? "N/A")</td>
-                        <td class="@(patient.Diagnosis == "Parasitized" ? "diagnosis-malaria" :
-                               patient.Diagnosis == "Uninfected" ? "diagnosis-healthy" : "diagnosis-other")">
-                            @(patient.Diagnosis == "Parasitized" ? "Malaria" :
-                                patient.Diagnosis == "Uninfected" ? "Healthy" : patient.Diagnosis)
+
+                        @* This is the updated cell for Diagnosis *@
+                        <td class="fw-bold">
+                            @if (patient.Diagnosis == "Parasitized")
+                            {
+                                <span class="text-danger">Malaria</span>
+                            }
+                            else if (patient.Diagnosis == "Uninfected")
+                            {
+                                <span class="text-success">Healthy</span>
+                            }
+                            else
+                            {
+                                <span class="text-warning">Pending Analysis...</span>
+                            }
                         </td>
+
                         @if (User.IsInRole(AppRoles.Admin.ToString()))
                         {
                             <td>@(patient.Doctor?.FullName ?? "Unassigned")</td>

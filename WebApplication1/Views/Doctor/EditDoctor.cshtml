@@ -1,0 +1,160 @@
+﻿@using DoctorPatientDashboard.Models
+@model DoctorEditViewModel
+
+@{
+    ViewData["Title"] = "Edit Doctor";
+}
+
+@* Section 1: Edit Doctor Details Form *@
+<div class="card mb-4">
+    <div class="header">
+        <h2><span class="icon">👨‍⚕️</span> Edit Doctor Details</h2>
+    </div>
+    <div class="card-body">
+        <form asp-action="EditDoctor" asp-route-id="@Model.Id" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="FullName" class="form-label"></label>
+                    <input asp-for="FullName" class="form-control" />
+                    <span asp-validation-for="FullName" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Email" class="form-label">Account (Email)</label>
+                    <input asp-for="Email" class="form-control" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Address" class="form-label"></label>
+                    <input asp-for="Address" class="form-control" />
+                    <span asp-validation-for="Address" class="text-danger"></span>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label asp-for="Age" class="form-label"></label>
+                    <input asp-for="Age" class="form-control" />
+                    <span asp-validation-for="Age" class="text-danger"></span>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label asp-for="SelectedRole" class="form-label"></label>
+                    <select asp-for="SelectedRole" asp-items="@Model.AllRoles" class="form-select"></select>
+                </div>
+            </div>
+
+            <hr />
+            <div class="text-end">
+                <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+                <button type="submit" class="btn btn-primary">Save Doctor Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@* Section 2: Manage Assigned Patients *@
+<div class="card">
+    <div class="header">
+        <h2><span class="icon">👥</span> Manage Assigned Patients</h2>
+    </div>
+    <div class="card-body">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Patient Name</th>
+                    <th>Diagnosis</th>
+                    <th>Re-assign To</th>
+                    <th style="width: 15%;">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var patient in Model.AssignedPatients)
+                {
+                    <tr id="patient-row-@patient.PatientID">
+                        <td>@patient.Name</td>
+
+                        @* This is the updated cell for Diagnosis *@
+                        <td class="fw-bold">
+                            @if (patient.Diagnosis == "Parasitized")
+                            {
+                                <span class="text-danger">Malaria</span>
+                            }
+                            else if (patient.Diagnosis == "Uninfected")
+                            {
+                                <span class="text-success">Healthy</span>
+                            }
+                            else
+                            {
+                                <span class="text-warning">Pending Analysis...</span>
+                            }
+                        </td>
+
+                        <td>
+                            <select class="form-select form-select-sm" id="doctor-select-@patient.PatientID">
+                                <option value="">-- Select new doctor --</option>
+                                @foreach (var doctor in Model.OtherDoctors)
+                                {
+                                    <option value="@doctor.Value">@doctor.Text</option>
+                                }
+                            </select>
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-info reassign-btn" data-patient-id="@patient.PatientID">Re-assign</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+
+    @* 1. Add this line to include the jQuery library *@
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+    @* 2. Your existing script comes after it *@
+    <script>
+        $(document).ready(function () {
+            $('.reassign-btn').on('click', function () {
+                var button = $(this);
+                var patientId = button.data('patient-id');
+                var newDoctorId = $('#doctor-select-' + patientId).val();
+
+                if (!newDoctorId) {
+                    alert('Please select a new doctor.');
+                    return;
+                }
+
+                // Add this line to include the anti-forgery token
+                var token = $('input[name="__RequestVerificationToken"]').val();
+
+                $.ajax({
+                    url: '@Url.Action("ReassignPatient", "Doctor")',
+                    type: 'POST',
+                    // Add the token to your data
+                    data: {
+                        __RequestVerificationToken: token,
+                        patientId: patientId,
+                        newDoctorId: newDoctorId
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            $('#patient-row-' + patientId).fadeOut(500, function() {
+                                $(this).remove();
+                            });
+                            alert(response.message);
+                        } else {
+                            alert('Error: ' + response.message);
+                        }
+                    },
+                    error: function () {
+                        alert('An unexpected error occurred.');
+                    }
+                });
+            });
+        });
+    </script>
+}

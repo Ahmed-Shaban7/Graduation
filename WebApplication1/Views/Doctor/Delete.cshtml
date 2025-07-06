@@ -1,0 +1,44 @@
+﻿@using DoctorPatientDashboard.Models
+@using Microsoft.AspNetCore.Identity
+@model ApplicationUser
+
+@{
+    ViewData["Title"] = "Delete Doctor";
+    var patientCount = (int)ViewData["PatientCount"];
+}
+
+<h1 class="text-danger">Delete Confirmation</h1>
+<hr />
+
+<div class="alert alert-danger" role="alert">
+    <h4 class="alert-heading">Are you sure?</h4>
+    <p>You are about to permanently delete the doctor: <strong>@Model.FullName</strong>.</p>
+    @if (patientCount > 0)
+    {
+        <p>
+            This action will also unassign <strong>@patientCount patient(s)</strong> from this doctor.
+            They will need to be reassigned manually.
+        </p>
+    }
+    <hr>
+    <p class="mb-0">This operation cannot be undone.</p>
+</div>
+
+<div>
+    <dl class="row">
+        <dt class="col-sm-2">Email</dt>
+        <dd class="col-sm-10">@Model.Email</dd>
+        <dt class="col-sm-2">Full Name</dt>
+        <dd class="col-sm-10">@Model.FullName</dd>
+    </dl>
+
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="Id" />
+        <button type="submit" class="btn btn-danger">
+            <i class="fas fa-trash-alt me-1"></i> Yes, Delete Doctor
+        </button>
+        <a asp-action="Index" class="btn btn-secondary">
+            <i class="fas fa-times me-1"></i> Cancel
+        </a>
+    </form>
+</div>
