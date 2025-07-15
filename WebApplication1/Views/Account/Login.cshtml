@@ -23,7 +23,7 @@
         .login-branding {
             position: relative;
             width: 50%;
-            background-image: url('/images/login-bg.jpg'); /* <-- ضع مسار صورتك هنا */
+            background-image: url('/images/login-bg.jpg'); /* ممكن تغيرها لصورة خلفية لو حبيت */
             background-size: cover;
             background-position: center;
             display: flex;
@@ -35,7 +35,6 @@
             padding: 2rem;
         }
 
-            /* الطبقة الشفافة فوق الصورة */
             .login-branding::after {
                 content: '';
                 position: absolute;
@@ -43,25 +42,28 @@
                 left: 0;
                 width: 100%;
                 height: 100%;
-                background-color: #172554; /* لون أزرق داكن */
-                opacity: 0.5; /* شفافية 50% */
-                transition: opacity 0.4s ease; /* تأثير انتقال ناعم */
+                background-color: #172554;
+                opacity: 0.5;
             }
-
-        /* تأثير الـ Hover */
-        .login-container:hover .login-branding::after {
-            opacity: 0.4; /* تقليل الشفافية عند مرور الماوس */
-        }
 
         .branding-content {
             position: relative;
-            z-index: 1; /* لوضع المحتوى فوق الطبقة الشفافة */
+            z-index: 1;
         }
 
+            .branding-content img {
+                width: 120px;
+                margin-bottom: 20px;
+                filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+                opacity: 0.8; 
+            }
+
+
             .branding-content h1 {
-                font-size: 2.5rem;
+                font-size: 2rem;
                 font-weight: 700;
                 text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+                opacity: 0.8;
             }
 
             .branding-content p {
@@ -85,25 +87,27 @@
             max-width: 400px;
         }
 
-        /* Responsive Design for mobile */
-        @@media (max-width: 768px) {
-            .login-branding {
-                display: none; /* إخفاء جزء الصورة في الشاشات الصغيرة */
-            }
+        media (max-width: 768px) {
+            .login-branding
 
-            .login-form-container {
-                width: 100%;
-            }
+        {
+            display: none;
         }
 
+        .login-form-container {
+            width: 100%;
+        }
+
+        }
     </style>
 </head>
 <body>
     <div class="login-container">
         <div class="login-branding">
             <div class="branding-content">
-                <h1><i class="fas fa-microscope"></i> AI Diagnosis</h1>
-                <p>Welcome to our advanced system for AI-powered malaria diagnosis, helping doctors make faster, more accurate decisions.</p>
+                <img src="~/images/logo_maps.jpeg" alt="MAPS Logo" />
+                <h1>MAPS</h1>
+                <p>Malaria AI Prediction System  Empowering Doctors with Intelligent Diagnosis</p>
             </div>
         </div>
 
@@ -114,32 +118,33 @@
                 <section>
                     <form asp-action="Login" method="post">
                         <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+
                         <div class="form-floating mb-3">
                             <input asp-for="Email" class="form-control" autocomplete="username" placeholder="name@example.com" />
                             <label asp-for="Email" class="form-label"></label>
                             <span asp-validation-for="Email" class="text-danger"></span>
                         </div>
+
                         <div class="form-floating mb-3">
                             <input asp-for="Password" type="password" class="form-control" autocomplete="current-password" placeholder="password" />
                             <label asp-for="Password" class="form-label"></label>
                             <span asp-validation-for="Password" class="text-danger"></span>
                         </div>
+
                         <div class="form-check mb-4">
                             <input class="form-check-input" asp-for="RememberMe" />
                             <label class="form-check-label" asp-for="RememberMe">
                                 @Html.DisplayNameFor(m => m.RememberMe)
                             </label>
                         </div>
-                        <div>
-                            <button type="submit" class="w-100 btn btn-lg btn-primary" style="background-color: #1E3A8A;">Log in</button>
-                        </div>
+
+                        <button type="submit" class="w-100 btn btn-lg btn-primary" style="background-color: #1E3A8A;">Log in</button>
                     </form>
                 </section>
             </div>
         </div>
     </div>
 
-    @* تأكد من أن مشروعك يحتوي على هذا الملف للـ Validation *@
     @* <partial name="_ValidationScriptsPartial" /> *@
 </body>
 </html>
