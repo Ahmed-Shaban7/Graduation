@@ -42,7 +42,7 @@ namespace WebApplication1.Controllers
             viewModel.PieChartData.AddRange(new int[] { viewModel.PositiveCases, viewModel.NegativeCases });
 
             var testsPerDay = await testsQuery
-                .Where(t => t.Date >= DateTime.UtcNow.AddDays(-7))
+                .Where(t => t.Date >= DateTime.UtcNow.AddDays(-30))
                 .GroupBy(t => t.Date.Date)
                 .Select(g => new { Day = g.Key, Count = g.Count() })
                 .OrderBy(x => x.Day)

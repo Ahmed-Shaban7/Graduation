@@ -1,10 +1,8 @@
 ﻿@model DashboardViewModel
-
 @{
     ViewData["Title"] = "Dashboard";
 }
 
-@* --- 1. البطاقات العلوية لعرض الإحصائيات --- *@
 <div class="row">
     <div class="col-xl-3 col-md-6 mb-4">
         <div class="card border-left-primary shadow h-100 py-2">
@@ -14,11 +12,14 @@
                         <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Patients</div>
                         <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalPatients</div>
                     </div>
-                    <div class="col-auto"><i class="fas fa-users fa-2x text-gray-300"></i></div>
+                    <div class="col-auto">
+                        <i class="fas fa-users fa-2x text-gray-300"></i>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+
     <div class="col-xl-3 col-md-6 mb-4">
         <div class="card border-left-info shadow h-100 py-2">
             <div class="card-body">
@@ -27,11 +28,14 @@
                         <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Total Tests</div>
                         <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalTests</div>
                     </div>
-                    <div class="col-auto"><i class="fas fa-vials fa-2x text-gray-300"></i></div>
+                    <div class="col-auto">
+                        <i class="fas fa-vials fa-2x text-gray-300"></i>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+
     <div class="col-xl-3 col-md-6 mb-4">
         <div class="card border-left-danger shadow h-100 py-2">
             <div class="card-body">
@@ -40,11 +44,14 @@
                         <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">Positive Cases</div>
                         <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.PositiveCases</div>
                     </div>
-                    <div class="col-auto"><i class="fas fa-exclamation-triangle fa-2x text-gray-300"></i></div>
+                    <div class="col-auto">
+                        <i class="fas fa-exclamation-triangle fa-2x text-gray-300"></i>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+
     <div class="col-xl-3 col-md-6 mb-4">
         <div class="card border-left-success shadow h-100 py-2">
             <div class="card-body">
@@ -53,24 +60,43 @@
                         <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Negative Cases</div>
                         <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.NegativeCases</div>
                     </div>
-                    <div class="col-auto"><i class="fas fa-check-circle fa-2x text-gray-300"></i></div>
+                    <div class="col-auto">
+                        <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-@* --- 2. الرسوم البيانية --- *@
 <div class="row">
+
     <div class="col-xl-8 col-lg-7">
+
         <div class="card shadow mb-4">
             <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-primary">Tests Per Day (Last 7 Days)</h6>
+                <h6 class="m-0 font-weight-bold text-primary">Tests Per Day (Last Month)</h6>
             </div>
             <div class="card-body">
-                <div class="chart-area"><canvas id="lineChart"></canvas></div>
+                <div class="chart-area">
+                    <canvas id="lineChart"></canvas>
+                </div>
             </div>
         </div>
+
+        @if (User.IsInRole("Admin"))
+        {
+            <div class="card shadow mb-4">
+                <div class="card-header text-center py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Malaria in Africa</h6>
+                </div>
+                <div class="card-body text-center p-2" style="background-color: #f8f9fc;">
+                    <img src="~/images/africa-map.jpeg"
+                         alt="Africa Map"
+                         style="width: 100%; max-width: 400px; max-height: 350px; opacity: 0.9; border-radius: 12px;" />
+                </div>
+            </div>
+        }
     </div>
 
     <div class="col-xl-4 col-lg-5">
@@ -79,24 +105,26 @@
                 <h6 class="m-0 font-weight-bold text-primary">Diagnosis Ratio</h6>
             </div>
             <div class="card-body">
-                <div class="chart-pie pt-4"><canvas id="pieChart"></canvas></div>
+                <div class="chart-pie">
+                    <canvas id="pieChart"></canvas>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
+
 @section Scripts {
-    @* --- 3. استدعاء مكتبة Chart.js وإعداد الرسوم البيانية --- *@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <script>
-        // --- إعداد الرسم البياني الدائري (Pie Chart) ---
+        // Pie Chart
         const pieCtx = document.getElementById('pieChart');
         new Chart(pieCtx, {
-            type: 'doughnut', // pie or doughnut
+            type: 'doughnut',
             data: {
                 labels: @Html.Raw(Json.Serialize(Model.PieChartLabels)),
                 datasets: [{
-                    label: 'Cases',
                     data: @Html.Raw(Json.Serialize(Model.PieChartData)),
                     backgroundColor: ['#e74a3b', '#1cc88a'],
                     hoverOffset: 4
@@ -105,10 +133,16 @@
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'bottom'
+                    }
+                }
             }
         });
 
-        // --- إعداد الرسم البياني الخطي (Line Chart) ---
+        // Line Chart
         const lineCtx = document.getElementById('lineChart');
         new Chart(lineCtx, {
             type: 'line',
